@@ -1,0 +1,54 @@
+/* Search Toggle Expansion */
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease; /* Animasi smooth */
+    overflow: hidden; /* Sembunyikan overflow saat expand */
+}
+
+.search-input {
+    display: none; /* Awalnya tersembunyi */
+    padding: 8px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: var(--white);
+    min-width: 200px; /* Lebar minimal input */
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
+
+.close-search {
+    font-size: 1.25rem;
+    color: var(--dark-grey);
+    margin-left: 8px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-search:hover {
+    color: var(--primary-blue);
+}
+
+.search-wrapper.expanded {
+    width: 280px; /* Lebar saat expand (sesuaikan jika perlu) */
+    /* Atau gunakan flex-grow: 1; jika ingin auto-adjust */
+}
+
+/* Responsif: Pada mobile, expand full width */
+@media (max-width: 768px) {
+    .search-wrapper.expanded {
+        width: 100%;
+        margin-right: 1rem;
+    }
+    
+    .search-input {
+        min-width: 150px;
+    }
+}

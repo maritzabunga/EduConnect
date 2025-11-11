@@ -1,0 +1,163 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+    background: #fff;
+}
+
+/* Navbar di Landing Page */
+.navbar-landing {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0052cc;
+    padding: 15px 40px;
+    color: white;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.nav-btns a {
+    color: white;
+    margin-left: 15px;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-login {
+    background: transparent;
+    border: 1px solid #fff;
+}
+
+.btn-register {
+    background: #ffb400;
+    color: #fff;
+}
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #0052cc, #007bff);
+    color: white;
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.hero h1 span {
+    color: #ffb400;
+}
+
+.btn-primary-landing {
+    background: #ffb400;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Features */
+.features {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.feature-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.feature-box {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    width: 250px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Footer */
+footer {
+    background: #0a0a23;
+    color: white;
+    padding: 40px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    text-align: left;
+}
+
+.footer-content h4 {
+    color: #ffb400;
+}
+
+footer ul {
+    list-style: none;
+    padding: 0;
+}
+footer p {
+    font-size: 0.9rem;
+}
+.copyright {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.8rem;
+}
+
+
+/* Forms */
+.form-container {
+    max-width: 400px;
+    margin: 80px auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.form-container h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-container button.btn-primary-landing {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+}
+.form-container button.btn-primary-landing:hover {
+    background: #ffaa00;
+}
+
+.form-container a {
+    color: #0052cc;
+    font-weight: 500;
+}
