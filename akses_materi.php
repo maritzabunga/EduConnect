@@ -1,19 +1,25 @@
 <?php
+session_start();
 include 'config.php';
+
+$userId = $_SESSION['user_id'] ?? null;
+if (!$userId) {
+    die("User tidak ditemukan. Pastikan sudah login.");
+}
 
 $materi_id = $_GET['id'] ?? null;
 
 if ($materi_id) {
-    // cek apakah sudah pernah disimpan (opsional, biar tidak double)
-    $check = $conn->query("SELECT * FROM riwayat WHERE user_id=$userId AND materi_id=$materi_id");
-    if ($check->num_rows == 0) {
-        $conn->query("INSERT INTO riwayat (user_id, materi_id) VALUES ($userId, $materi_id)");
-    }
+    $check = $conn->query("SELECT * FROM riwayat_materi WHERE user_id=$userId AND materi_id=$materi_id");
+if ($check->num_rows == 0) {
+    $conn->query("INSERT INTO riwayat_materi (user_id, materi_id) VALUES ($userId, $materi_id)");
+}
 
-    // ambil detail materi
+
     $materi = $conn->query("SELECT * FROM materi WHERE id=$materi_id")->fetch_assoc();
 }
 ?>
+
 
 
 <!DOCTYPE html>

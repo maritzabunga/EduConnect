@@ -11,7 +11,7 @@ $userId = $_SESSION['user_id'];
 
 $query = "
     SELECT r.waktu, m.judul, m.kategori, m.durasi, m.poin
-    FROM riwayat r
+    FROM riwayat_materi r
     JOIN materi m ON r.materi_id = m.id
     WHERE r.user_id = $userId
     ORDER BY r.waktu DESC
