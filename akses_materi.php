@@ -1,12 +1,50 @@
-<?php include 'header.php'; ?>
 <?php
-// Pastikan user login
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
+session_start();
+include 'config.php';
+
+$userId = $_SESSION['user_id'] ?? null;
+if (!$userId) {
+    die("User tidak ditemukan. Pastikan sudah login.");
 }
-$userId = $_SESSION['user_id'];
+
+$materi_id = $_GET['id'] ?? null;
+
+if ($materi_id) {
+    $check = $conn->query("SELECT * FROM riwayat_materi WHERE user_id=$userId AND materi_id=$materi_id");
+if ($check->num_rows == 0) {
+    $conn->query("INSERT INTO riwayat_materi (user_id, materi_id) VALUES ($userId, $materi_id)");
+}
+
+
+    $materi = $conn->query("SELECT * FROM materi WHERE id=$materi_id")->fetch_assoc();
+}
+
+if ($materi_id) {
+
+    // Cek apakah user sudah pernah membuka materi ini
+    $cekHistory = $conn->query("
+        SELECT * FROM learning_history 
+        WHERE user_id = $userId AND materi_id = $materi_id
+    ");
+
+    if ($cekHistory->num_rows == 0) {
+        // Jika belum pernah, buat catatan baru
+        $conn->query("
+            INSERT INTO learning_history (user_id, materi_id, last_section)
+            VALUES ($userId, $materi_id, 'Awal')
+        ");
+    } else {
+        // Jika sudah pernah, update timestamp
+        $conn->query("
+            UPDATE learning_history 
+            SET last_access = CURRENT_TIMESTAMP
+            WHERE user_id = $userId AND materi_id = $materi_id
+        ");
+    }
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -248,7 +286,7 @@ $userId = $_SESSION['user_id'];
     <div class="content">
       <div class="card">
         <div class="tag">Pemrograman</div>
-        <div class="title">Pengenalan Algoritma dan Struktur Data</div>
+        <div class="title"><?= $materi['judul'] ?></div>
         <div class="desc">
           Pelajari dasar-dasar algoritma dan struktur data yang penting untuk pemrograman. Materi mencakup array, linked list, stack, queue, dan tree.
         </div>
