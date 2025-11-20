@@ -2,103 +2,117 @@
 session_start();
 include 'config.php';
 
-$userId = $_SESSION['user_id'] ?? null;
-if (!$userId) {
-    die("User tidak ditemukan. Pastikan sudah login.");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
 }
 
-// Ambil riwayat user
+$userId = $_SESSION['user_id'];
+
 $query = "
-    SELECT lh.*, rm.judul, rm.kategori, rm.warna, rm.file_path
-    FROM learning_history lh
-    JOIN riwayat_materi rm ON lh.materi_id = rm.id
-    WHERE lh.user_id = $userId
-    ORDER BY lh.last_access DESC
+    SELECT 
+        r.waktu, 
+        m.judul, 
+        m.kategori,
+        lh.last_section,
+        m.id AS materi_id
+    FROM riwayat_materi r
+    JOIN materi m ON r.materi_id = m.id
+    LEFT JOIN learning_history lh 
+        ON lh.user_id = r.user_id 
+        AND lh.materi_id = r.materi_id
+    WHERE r.user_id = $userId
+    ORDER BY r.waktu DESC
 ";
 
-$riwayat = $conn->query($query);
-?>
 
+$result = $conn->query($query);
+include 'header.php';
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Riwayat Belajar</title>
+<title>Riwayat Belajar</title>
+<link rel="stylesheet" href="profil_style.css">
+<style>
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+    font-size: 15px;
+}
 
-    <style>
-        body {
-            background: #f7f8fa;
-            font-family: "Inter", sans-serif;
-            padding: 40px;
-        }
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
 
-        h2 {
-            font-size: 26px;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
+/* ✨ Lebar kolom rapi & sejajar */
+th:nth-child(1), td:nth-child(1) { width: 45%; }  
+th:nth-child(2), td:nth-child(2) { width: 20%; }  
+th:nth-child(3), td:nth-child(3) { width: 25%; }  
 
-        .list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 22px;
-        }
+th {
+    background: #1e56ff;
+    color: white;
+}
 
-        .card {
-            padding: 20px;
-            border-radius: 14px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            cursor: pointer;
-            transition: 0.2s;
-            color: white;
-        }
+tr:hover {
+    background: #f2f7ff;
+}
 
-        .card:hover {
-            transform: translateY(-4px);
-        }
-
-        .title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .category {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 10px;
-        }
-
-        .time {
-            font-size: 13px;
-            opacity: 0.8;
-        }
-    </style>
-
+</style>
 </head>
+
 <body>
+<main style="padding:40px">
+    <h2>Riwayat Belajar Kamu</h2>
+    <br>
 
-<h2>Riwayat Belajar</h2>
+  <table>
+    <colgroup>
+        <col style="width: 35%;"> 
+        <col style="width: 15%;">   
+        <col style="width: 20%;">   
+    </colgroup>
 
-<div class="list">
+    <tr>
+        <th>Materi</th>
+        <th>Kategori</th>
+        <th>Terakhir Diakses</th>
+    </tr>
 
-    <?php if ($riwayat->num_rows > 0): ?>
-        <?php while ($row = $riwayat->fetch_assoc()): ?>
-            
-            <a href="akses_materi.php?id=<?= $row['materi_id'] ?>" style="text-decoration:none;">
-                <div class="card" style="background: <?= $row['warna'] ?>;">
-                    <div class="title"><?= $row['judul'] ?></div>
-                    <div class="category"><?= $row['kategori'] ?></div>
-                    <div class="time">Terakhir dibuka: <?= $row['last_access'] ?></div>
-                </div>
-            </a>
+    <?php while ($row = $result->fetch_assoc()): ?>
+    <tr>
+        <td>
+    <a href="akses_materi.php?id=<?= $row['materi_id'] ?>" style="text-decoration:none; color:#1e56ff;">
+        <?= $row['judul'] ?>
+    </a>
+</td>
 
-        <?php endwhile; ?>
-    <?php else: ?>
-        <p>Belum ada riwayat belajar.</p>
-    <?php endif; ?>
+        <td><?= $row['kategori'] ?></td>
+        <td><?= $row['waktu'] ?></td>
+    </tr>
+    <?php endwhile; ?>
+</table>
 
-</div>
+</main>
+  <script src="js/point_popup.js"></script>
+  <script src="js/point_tracker.js"></script>
+
+  <script>
+  window.onload = function () {
+      let section = "<?= $last_section ?>";
+
+      if(section !== "Awal") {
+          let el = document.getElementById(section);
+          if(el) {
+              el.scrollIntoView({behavior:"smooth"});
+          }
+      }
+  };
+  </script>
 
 </body>
 </html>

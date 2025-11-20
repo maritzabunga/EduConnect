@@ -2,6 +2,7 @@
 session_start();
 include 'config.php';
 
+// Pastikan user login
 $userId = $_SESSION['user_id'] ?? null;
 if (!$userId) {
     die("User tidak ditemukan. Pastikan sudah login.");
@@ -10,40 +11,75 @@ if (!$userId) {
 $materi_id = $_GET['id'] ?? null;
 
 if ($materi_id) {
+
+    // ========== AMBIL TITIK TERAKHIR ========== //
+    $last = $conn->query("
+        SELECT last_section 
+        FROM learning_history 
+        WHERE user_id = $userId AND materi_id = $materi_id
+    ")->fetch_assoc();
+
+    $last_section = $last['last_section'] ?? 'Awal';
+    // ========================================== //
+
+    // Cek riwayat untuk tabel riwayat_materi
     $check = $conn->query("SELECT * FROM riwayat_materi WHERE user_id=$userId AND materi_id=$materi_id");
-if ($check->num_rows == 0) {
-    $conn->query("INSERT INTO riwayat_materi (user_id, materi_id) VALUES ($userId, $materi_id)");
-}
+    if ($check->num_rows == 0) {
+        $conn->query("INSERT INTO riwayat_materi (user_id, materi_id) VALUES ($userId, $materi_id)");
+    }
 
-
+    // Ambil data materi
     $materi = $conn->query("SELECT * FROM materi WHERE id=$materi_id")->fetch_assoc();
 }
 
+
+// Jika materi dipilih
 if ($materi_id) {
 
-    // Cek apakah user sudah pernah membuka materi ini
+    // --- 1. SIMPAN RIWAYAT KE TABEL riwayat_materi ---
+    $checkRiwayat = $conn->query("
+        SELECT * FROM riwayat_materi 
+        WHERE user_id = $userId AND materi_id = $materi_id
+    ");
+
+    if ($checkRiwayat->num_rows == 0) {
+        // Jika belum ada, INSERT baru
+        $conn->query("
+            INSERT INTO riwayat_materi (user_id, materi_id)
+            VALUES ($userId, $materi_id)
+        ");
+    } else {
+        // Jika sudah ada, update waktu terakhir akses
+        $conn->query("
+            UPDATE riwayat_materi 
+            SET waktu = CURRENT_TIMESTAMP
+            WHERE user_id = $userId AND materi_id = $materi_id
+        ");
+    }
+
+    // --- 2. SIMPAN HISTORY LENGKAP DI TABEL learning_history ---
     $cekHistory = $conn->query("
         SELECT * FROM learning_history 
         WHERE user_id = $userId AND materi_id = $materi_id
     ");
 
     if ($cekHistory->num_rows == 0) {
-        // Jika belum pernah, buat catatan baru
         $conn->query("
             INSERT INTO learning_history (user_id, materi_id, last_section)
             VALUES ($userId, $materi_id, 'Awal')
         ");
     } else {
-        // Jika sudah pernah, update timestamp
         $conn->query("
             UPDATE learning_history 
             SET last_access = CURRENT_TIMESTAMP
             WHERE user_id = $userId AND materi_id = $materi_id
         ");
     }
+
+    // --- 3. AMBIL DETAIL MATERI ---
+    $materi = $conn->query("SELECT * FROM materi WHERE id=$materi_id")->fetch_assoc();
 }
 ?>
-
 
 
 <!DOCTYPE html>
