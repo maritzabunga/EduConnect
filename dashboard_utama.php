@@ -184,7 +184,7 @@ include 'header.php';
     const calendarBody=document.getElementById("calendarBody");
     const renderCalendar=()=>{
       const month=date.getMonth(), year=date.getFullYear(), today=new Date();
-      monthYear.textContent=${monthNames[month]} ${year};
+      monthYear.textContent = `${monthNames[month]} ${year}`;
       const firstDay=new Date(year,month,1).getDay();
       const daysInMonth=new Date(year,month+1,0).getDate();
       let table="<table><tr><th>M</th><th>S</th><th>S</th><th>R</th><th>K</th><th>J</th><th>S</th></tr><tr>";
