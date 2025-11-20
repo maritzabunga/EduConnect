@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'config.php'; // Pastikan koneksi DB
+include 'koneksi.php'; // Menggunakan koneksi.php
 
 $error = '';
 $success = '';
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Hash password
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // Insert user
+            // Insert user (Database akan otomatis mengisi status='Siswa' dan foto='img/avatar.png' sesuai default)
             $stmt = $conn->prepare("INSERT INTO users (nama_pengguna, email, password) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $nama, $email, $hashed_password);
 
@@ -39,9 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Set session (langsung login)
                 $_SESSION['user_id'] = $user_id;
                 $_SESSION['nama_pengguna'] = $nama;
+                // Set default session agar dashboard tidak error
+                $_SESSION['status'] = 'Siswa'; 
+                $_SESSION['foto'] = 'img/avatar.png';
 
                 $success = "Pendaftaran berhasil! Mengarahkan ke dashboard...";
-                echo "<script>setTimeout(() => { window.location.href = 'dashboard_utama.php'; }, 1500);</script>";
+                // Redirect ke dashboard.php
+                echo "<script>setTimeout(() => { window.location.href = 'dashboard.php'; }, 1500);</script>";
             } else {
                 $error = "Terjadi kesalahan. Coba lagi.";
             }

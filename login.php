@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'config.php'; // Pastikan koneksi DB
+include 'koneksi.php'; // Menggunakan koneksi.php
 
 $error = '';
 
@@ -8,8 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
     $password = $_POST['password'];
 
-    // Cek user di database
-    $stmt = $conn->prepare("SELECT id, nama_pengguna, password FROM users WHERE email = ?");
+    // Cek user di database (Ambil semua data termasuk foto dan status)
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -17,14 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
-        // Verifikasi password (asumsi password disimpan dengan password_hash)
+        // Verifikasi password
         if (password_verify($password, $user['password'])) {
-            // SET SESSION DI SINI
+            // SET SESSION LENGKAP
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['nama_pengguna'] = $user['nama_pengguna'];
-
+            $_SESSION['status'] = $user['status']; // Penting untuk profil
+            $_SESSION['foto'] = $user['foto'];     // Penting untuk navbar
+            
             // Redirect ke dashboard
-            header("Location: dashboard_utama.php");
+            header("Location: dashboard.php");
             exit;
         } else {
             $error = "Password salah!";
@@ -41,8 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - EduConnect</title>
-    <link rel="stylesheet" href="main_style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main_style.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         .error-msg {
             color: #dc3545;
