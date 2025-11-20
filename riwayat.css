@@ -1,0 +1,41 @@
+.riwayat-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+}
+
+.riwayat-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.riwayat-item {
+    display: flex;
+    align-items: center;
+    padding: 18px;
+    margin-top: 15px;
+    background: #fafafa;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid #eee;
+    transition: 0.2s;
+}
+
+.riwayat-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.riwayat-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    margin-right: 20px;
+}
+
+.riwayat-title-item {
+    font-size: 18px;
+    font-weight: 600;
+}
