@@ -18,6 +18,30 @@ if ($check->num_rows == 0) {
 
     $materi = $conn->query("SELECT * FROM materi WHERE id=$materi_id")->fetch_assoc();
 }
+
+if ($materi_id) {
+
+    // Cek apakah user sudah pernah membuka materi ini
+    $cekHistory = $conn->query("
+        SELECT * FROM learning_history 
+        WHERE user_id = $userId AND materi_id = $materi_id
+    ");
+
+    if ($cekHistory->num_rows == 0) {
+        // Jika belum pernah, buat catatan baru
+        $conn->query("
+            INSERT INTO learning_history (user_id, materi_id, last_section)
+            VALUES ($userId, $materi_id, 'Awal')
+        ");
+    } else {
+        // Jika sudah pernah, update timestamp
+        $conn->query("
+            UPDATE learning_history 
+            SET last_access = CURRENT_TIMESTAMP
+            WHERE user_id = $userId AND materi_id = $materi_id
+        ");
+    }
+}
 ?>
 
 
