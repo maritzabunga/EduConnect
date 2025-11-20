@@ -2,58 +2,103 @@
 session_start();
 include 'config.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
+$userId = $_SESSION['user_id'] ?? null;
+if (!$userId) {
+    die("User tidak ditemukan. Pastikan sudah login.");
 }
 
-$userId = $_SESSION['user_id'];
-
+// Ambil riwayat user
 $query = "
-    SELECT r.waktu, m.judul, m.kategori, m.durasi, m.poin
-    FROM riwayat_materi r
-    JOIN materi m ON r.materi_id = m.id
-    WHERE r.user_id = $userId
-    ORDER BY r.waktu DESC
+    SELECT lh.*, rm.judul, rm.kategori, rm.warna, rm.file_path
+    FROM learning_history lh
+    JOIN riwayat_materi rm ON lh.materi_id = rm.id
+    WHERE lh.user_id = $userId
+    ORDER BY lh.last_access DESC
 ";
 
-$result = $conn->query($query);
-
-include 'header.php';
+$riwayat = $conn->query($query);
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<title>Riwayat Belajar</title>
-<link rel="stylesheet" href="profil_style.css">
+    <meta charset="UTF-8">
+    <title>Riwayat Belajar</title>
+
+    <style>
+        body {
+            background: #f7f8fa;
+            font-family: "Inter", sans-serif;
+            padding: 40px;
+        }
+
+        h2 {
+            font-size: 26px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .category {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .time {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+    </style>
+
 </head>
 <body>
 
-<main style="padding:40px">
-    <h2>Riwayat Belajar Kamu</h2>
-    <br>
+<h2>Riwayat Belajar</h2>
 
-    <table border="1" cellpadding="12" cellspacing="0" width="100%">
-        <tr>
-            <th>Materi</th>
-            <th>Kategori</th>
-            <th>Durasi</th>
-            <th>Poin</th>
-            <th>Waktu Diakses</th>
-        </tr>
+<div class="list">
 
-        <?php while ($row = $result->fetch_assoc()): ?>
-        <tr>
-            <td><?= $row['judul'] ?></td>
-            <td><?= $row['kategori'] ?></td>
-            <td><?= $row['durasi'] ?></td>
-            <td><?= $row['poin'] ?></td>
-            <td><?= $row['waktu'] ?></td>
-        </tr>
+    <?php if ($riwayat->num_rows > 0): ?>
+        <?php while ($row = $riwayat->fetch_assoc()): ?>
+            
+            <a href="akses_materi.php?id=<?= $row['materi_id'] ?>" style="text-decoration:none;">
+                <div class="card" style="background: <?= $row['warna'] ?>;">
+                    <div class="title"><?= $row['judul'] ?></div>
+                    <div class="category"><?= $row['kategori'] ?></div>
+                    <div class="time">Terakhir dibuka: <?= $row['last_access'] ?></div>
+                </div>
+            </a>
+
         <?php endwhile; ?>
-    </table>
-</main>
+    <?php else: ?>
+        <p>Belum ada riwayat belajar.</p>
+    <?php endif; ?>
+
+</div>
 
 </body>
 </html>
