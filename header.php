@@ -26,7 +26,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 <li><a href="dashboard_utama.php">Beranda</a></li>
                 <li><a href="kalender.php">Kalender</a></li>
                 <li><a href="#">Laporan</a></li>
-                <li><a href="#">Riwayat</a></li>
+                <li><a href="riwayat.php">Riwayat</a></li>
             </ul>
         </div>
         <div class="nav-right">

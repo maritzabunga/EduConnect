@@ -1,12 +1,20 @@
-<?php include 'header.php'; ?>
 <?php
-// Pastikan user login
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
+include 'config.php';
+
+$materi_id = $_GET['id'] ?? null;
+
+if ($materi_id) {
+    // cek apakah sudah pernah disimpan (opsional, biar tidak double)
+    $check = $conn->query("SELECT * FROM riwayat WHERE user_id=$userId AND materi_id=$materi_id");
+    if ($check->num_rows == 0) {
+        $conn->query("INSERT INTO riwayat (user_id, materi_id) VALUES ($userId, $materi_id)");
+    }
+
+    // ambil detail materi
+    $materi = $conn->query("SELECT * FROM materi WHERE id=$materi_id")->fetch_assoc();
 }
-$userId = $_SESSION['user_id'];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -248,7 +256,7 @@ $userId = $_SESSION['user_id'];
     <div class="content">
       <div class="card">
         <div class="tag">Pemrograman</div>
-        <div class="title">Pengenalan Algoritma dan Struktur Data</div>
+        <div class="title"><?= $materi['judul'] ?></div>
         <div class="desc">
           Pelajari dasar-dasar algoritma dan struktur data yang penting untuk pemrograman. Materi mencakup array, linked list, stack, queue, dan tree.
         </div>
